@@ -1,0 +1,2 @@
+C:/Users/Dell/StudioProjects/Assignment/android/app/.cxx/Debug/386y4k1j/x86/CMakeFiles/edit_cache.dir
+C:/Users/Dell/StudioProjects/Assignment/android/app/.cxx/Debug/386y4k1j/x86/CMakeFiles/rebuild_cache.dir
