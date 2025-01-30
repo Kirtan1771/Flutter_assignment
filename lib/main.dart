@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +10,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Flutter Demo', home: const HomePage());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter InAppWebView Demo',
+      home: const HomePage(),
+    );
   }
 }
 
@@ -23,7 +26,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late WebViewController _webViewController;
+  InAppWebViewController? _webViewController;
   final TextEditingController _textController = TextEditingController();
   String imageUrl = "";
   bool isFullscreen = false;
@@ -32,15 +35,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _webViewController = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadHtmlString(_generateHtml(""));
-  }
-
-  @override
-  void dispose() {
-    _webViewController.clearCache();
-    super.dispose();
   }
 
   String _generateHtml(String url) {
@@ -64,19 +58,16 @@ class _HomePageState extends State<HomePage> {
     final url = _textController.text.trim();
     if (url.isEmpty || !url.startsWith('http')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a valid URL')),
+        const SnackBar(content: Text('Please enter a valid URL')),
       );
       return;
     }
-    print('Loading URL: $url'); // Debugging
+
     setState(() {
       imageUrl = url;
     });
-    _webViewController.loadHtmlString(_generateHtml(imageUrl)).then((_) {
-      print('WebView content loaded'); // Debugging
-    }).catchError((error) {
-      print('Failed to load WebView content: $error'); // Debugging
-    });
+
+    _webViewController?.loadData(data: _generateHtml(imageUrl));
   }
 
   void _toggleFullscreen() {
@@ -100,31 +91,26 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: isFullscreen ? null : AppBar(),
+      appBar: isFullscreen ? null : AppBar(title: const Text("InAppWebView Example")),
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(32, 16, 32, 16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: imageUrl.isEmpty
-                        ? Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Enter a URL and press the button.',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    )
-                        : WebViewWidget(controller: _webViewController),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: InAppWebView(
+                      initialData: InAppWebViewInitialData(data: _generateHtml("")),
+                      onWebViewCreated: (controller) {
+                        _webViewController = controller;
+                      },
+                    ),
                   ),
                 ),
                 if (!isFullscreen)
@@ -136,13 +122,13 @@ class _HomePageState extends State<HomePage> {
                           Expanded(
                             child: TextField(
                               controller: _textController,
-                              decoration: InputDecoration(hintText: 'Image URL'),
+                              decoration: const InputDecoration(hintText: 'Image URL'),
                             ),
                           ),
                           ElevatedButton(
                             onPressed: _loadImage,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
+                            child: const Padding(
+                              padding: EdgeInsets.all(12),
                               child: Icon(Icons.arrow_forward),
                             ),
                           ),
@@ -157,11 +143,7 @@ class _HomePageState extends State<HomePage> {
           if (isMenuOpen)
             GestureDetector(
               onTap: _closeMenu,
-              child: Container(
-                color: Colors.black54,
-                width: double.infinity,
-                height: double.infinity,
-              ),
+              child: Container(color: Colors.black54, width: double.infinity, height: double.infinity),
             ),
           if (isMenuOpen)
             Positioned(
@@ -183,7 +165,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _toggleMenu,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
