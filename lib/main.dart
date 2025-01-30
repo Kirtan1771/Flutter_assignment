@@ -108,24 +108,22 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: imageUrl.isEmpty
-                        ? Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(12),
+                AspectRatio(
+                  aspectRatio: 1,
+                  child: imageUrl.isEmpty
+                      ? Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Enter a URL and press the button.',
+                        style: TextStyle(color: Colors.white),
                       ),
-                      child: Center(
-                        child: Text(
-                          'Enter a URL and press the button.',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    )
-                        : WebViewWidget(controller: _webViewController),
-                  ),
+                    ),
+                  )
+                      : WebViewWidget(controller: _webViewController),
                 ),
                 if (!isFullscreen)
                   Column(
@@ -133,11 +131,9 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _textController,
-                              decoration: InputDecoration(hintText: 'Image URL'),
-                            ),
+                          TextField(
+                            controller: _textController,
+                            decoration: InputDecoration(hintText: 'Image URL'),
                           ),
                           ElevatedButton(
                             onPressed: _loadImage,
