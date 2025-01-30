@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html>
 <head>
   <!--
@@ -15,6 +15,7 @@
     the `--base-href` argument provided to `flutter build`.
   -->
   <base href="$FLUTTER_BASE_HREF">
+  <base href="./">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -28,11 +29,33 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
-
+  <script src="./flutter.js" defer></script>
   <title>assignment</title>
-  <link rel="manifest" href="manifest.json">
+  <script src="main.dart.js" defer></script>
+  <link rel="manifest" href="./manifest.json">
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+  <script src="./flutter_bootstrap.js" async></script>
+  <script>
+    class IframeElement {
+      constructor() {
+        this.element = document.createElement('iframe');
+        this.element.style.width = '100%';
+        this.element.style.height = '100%';
+        this.element.style.border = 'none';
+      }
+
+      set src(url) {
+        this.element.src = url;
+      }
+    }
+
+    window.addEventListener('load', function () {
+      window.flutterWebRenderer = 'html';
+      window.addEventListener('DOMContentLoaded', function () {
+        window.registerIframeElement = () => new IframeElement();
+      });
+    });
+  </script>
 </body>
 </html>
